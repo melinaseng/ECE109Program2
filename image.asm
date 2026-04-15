@@ -5,12 +5,12 @@
 
 START 
         ; ask for prompt1 and echo, ignore invalid characters 
-
         LEA R0, PROMPT1
         PUTS
         GETC 
+        BR CHECK 
 
-        ; -- Check to see if input is x --
+CHECK   ; -- Check to see if input is x --
         LD R1, NEGX 
         NOT R2, R1
         ADD R2, R2, #1
@@ -24,14 +24,17 @@ START
         ADD R2, R0, R2
         BRz LOADO
 
+        BR CHECK ; Ignore invalid characters 
+
 LOADX
         ; load image x
 
 LOADO
         ; load image o
         
-        ; Check for user input again 
-        GETC
+       
+MAIN_LOOP
+        GETC ; Check for user input 
 
         ; -- wasd commands
         LD R4, NEGW
@@ -58,18 +61,6 @@ LOADO
         ADD R4, R0, R4
         BRz RIGHT
 
-UP 
-        ; Move the image up 8 pixels 
-
-LEFT
-        ; Move the image left 8 pixels 
-
-DOWN
-        ; Move the image down 8 pixels 
-
-RIGHT
-        ; Move the image right 8 pixels 
-
         ; cq commands 
         LD R4, NEGC
         NOT R4, R4
@@ -82,6 +73,22 @@ RIGHT
         ADD R4, R4, #1
         ADD R4, R0, R4
         BRz QUIT
+
+        BR MAIN_LOOP
+
+UP 
+        ; Move the image up 8 pixels 
+
+LEFT
+        ; Move the image left 8 pixels 
+
+DOWN
+        ; Move the image down 8 pixels 
+
+RIGHT
+        ; Move the image right 8 pixels 
+
+       
 
 CLEAR
         ; Clear the screen and restart the program from beginning 
