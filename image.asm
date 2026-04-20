@@ -5,7 +5,9 @@
 
 START 
         JSR CLEAR_SCREEN 
+
         ; load coordinates
+
         LD R0, STARTX
         STI R0, XCOORD
         LD R0, STARTY
@@ -15,10 +17,11 @@ START
         
         LEA R0, PROMPT1
         PUTS
-        GETC 
-        BR CHECK 
 
-CHECK   ; -- Check to see if input is x --
+CHECK   
+        GETC
+
+        ; -- Check to see if input is x --
         LD R1, NEGX 
         NOT R1, R1
         ADD R1, R1, #1
@@ -107,7 +110,6 @@ LEFT
         ADD R0, R0, #-8
         BRzp STORELEFTX
         AND R0, R0, #0
-   
 STORELEFTX
         STI R0, XCOORD
         BR REDRAW
@@ -121,9 +123,7 @@ DOWN
         ADD R2, R2, #1
         ADD R2, R0, R2
         BRnz STOREDOWNY
-
         LD R0, MAXY
-
 STOREDOWNY
         STI R0, YCOORD
         BR REDRAW
@@ -137,9 +137,7 @@ RIGHT
         ADD R2, R2, #1
         ADD R2, R0, R2
         BRnz STORERIGHTX
-
         LD R0, MAXX
-    
 STORERIGHTX
         STI R0, XCOORD
         BR REDRAW
@@ -147,24 +145,34 @@ STORERIGHTX
 
 CLEAR
         ; Clear the screen and restart the program from beginning 
-        JSR CLEAR_SCREEN
         BR START 
 
 QUIT 
         ; The simulator stops runner
         HALT
 
-DRAW_IMAGE
-        
+REDRAW
         ST R3, SAVE_R3
+        JSR CLEAR_SCREEN
+        ST R3, SAVE_R3
+        JSR DRAW_IMAGE
+        BR MAIN_LOOP
+
+DRAW_IMAGE
+        ST R3, SAVE_R3
+        ST R7, SAVE_R7
+
         LD R4, SCREEN_BASE
         LDI R5, YCOORD
         AND R6, R6, #0
+        LD R7, WIDTHOFROW
 
 Y_LOOP
-        ADD R6, R6, #128
         ADD R5, R5, #-1
-        BRp Y_LOOP
+        BRn Y_DONE
+        ADD R6, R6, R7
+        BR Y_LOOP
+Y_DONE  
         LDI R5, XCOORD
         ADD R6, R6, R5
         ADD R4, R4, R6
@@ -183,48 +191,59 @@ MOVECOL
         ADD R4, R4, #1
         ADD R6, R6, #-1
         BRp MOVECOL
+
         ADD R4, R4, #108
         ADD R5, R5, #-1
         BRp MOVEROW
 
         LD R3, SAVE_R3
+        LD R7, SAVE_R7
         RET 
 
-REDRAW
-        JSR CLEAR_SCREEN
-        JSR DRAW_IMAGE
-        BR MAIN_LOOP
-
-; DONTMOVE
-        ; Don't redraw the image if it is out of bounds
-        ; BR MAIN_LOOP
-
 CLEAR_SCREEN
+        ST R0, SAVE_R0
+        ST R1, SAVE_R1
+        ST R2, SAVE_R2
+
         LD R1, SCREEN_START
         LD R2, SCREEN_END
+        AND R0, R0, #0
 
 CLEAR_LOOP
-        AND R0, R0, #0
         STR R0, R1, #0
         ADD R1, R1, #1
         NOT R3, R1
         ADD R3, R3, #1
         ADD R3, R2, R3
         BRzp CLEAR_LOOP
+
+        LD R0, SAVE_R0
+        LD R1, SAVE_R1
+        LD R2, SAVE_R2
         RET
 
+SAVE_R0 .FILL #0
+SAVE_R1 .FILL #0
+SAVE_R2 .FILL #0
 SAVE_R3 .FILL #0
+SAVE_R7 .FILL #0
+
 SCREEN_BASE .FILL xC000
 SCREEN_START .FILL xC000
 SCREEN_END .FILL xFDFF
+WIDTHOFROW .FILL #128
+
 STARTX .FILL #54
 STARTY .FILL #52
 MAXX .FILL #108
 MAXY .FILL #104 
+
 XCOORD .FILL x4000
 YCOORD .FILL x4001
+
 IMAGEX .FILL xA000
 IMAGEO .FILL xA200
+
 NEGX .FILL x0078
 NEGO .FILL x006F
 NEGW .FILL x0077
