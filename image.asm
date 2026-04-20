@@ -64,26 +64,26 @@ MAIN_LOOP
         ADD R2, R0, R1
         BRz LEFT
 
-        LD R4, NEGS
+        LD R1, NEGS
         NOT R1, R1
         ADD R1, R1, #1
         ADD R2, R0, R1
         BRz DOWN
 
-        LD R4, NEGD
+        LD R1, NEGD
         NOT R1, R1
         ADD R1, R1, #1
         ADD R2, R0, R1
         BRz RIGHT
 
         ; cq commands 
-        LD R4, NEGC
+        LD R1, NEGC
         NOT R1, R1
         ADD R1, R1, #1
         ADD R2, R0, R1
         BRz CLEAR
 
-        LD R4, NEGQ
+        LD R1, NEGQ
         NOT R1, R1
         ADD R1, R1, #1
         ADD R2, R0, R1
@@ -96,6 +96,7 @@ UP
         LDI R0, YCOORD
         ADD R0, R0, #-8
         BRzp STOREUPY
+        AND R0, R0, #0
 STOREUPY
         STI R0, YCOORD
         BR REDRAW
@@ -104,9 +105,12 @@ LEFT
         ; Move the image left 8 pixels 
         LDI R0, XCOORD
         ADD R0, R0, #-8
-        BRn DONTMOVE
+        BRzp STORELEFTX
+        AND R0, R0, #0
+   
+STORELEFTX
         STI R0, XCOORD
-        BR REDRAW 
+        BR REDRAW
 
 DOWN
         ; Move the image down 8 pixels 
@@ -169,7 +173,7 @@ Y_LOOP
         ADD R5, R5, #20
 
 MOVEROW
-        ADD R6, R6, #0
+        AND R6, R6, #0
         ADD R6, R6, #20
 
 MOVECOL 
@@ -209,6 +213,7 @@ CLEAR_LOOP
         BRzp CLEAR_LOOP
         RET
 
+SAVE_R3 .FILL #0
 SCREEN_BASE .FILL xC000
 SCREEN_START .FILL xC000
 SCREEN_END .FILL xFDFF
