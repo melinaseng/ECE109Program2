@@ -20,16 +20,16 @@ START
 
 CHECK   ; -- Check to see if input is x --
         LD R1, NEGX 
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R2, R1
+        ADD R2, R2, #1
+        ADD R2, R0, R2
         BRz LOADX
 
         ; -- Check to see if input is o --
         LD R1, NEGO 
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R2, R1
+        ADD R2, R2, #1
+        ADD R2, R0, R2
         BRz LOADO
 
         GETC
@@ -52,41 +52,41 @@ MAIN_LOOP
         GETC ; Check for user input 
 
         ; -- wasd commands
-        LD R1, NEGW
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        LD R4, NEGW
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz UP
 
-        LD R1, NEGA
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        LD R4, NEGA
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz LEFT
 
         LD R4, NEGS
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz DOWN
 
         LD R4, NEGD
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz RIGHT
 
         ; cq commands 
         LD R4, NEGC
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz CLEAR
 
         LD R4, NEGQ
-        NOT R1, R1
-        ADD R1, R1, #1
-        ADD R2, R0, R1
+        NOT R4, R4
+        ADD R4, R4, #1
+        ADD R4, R0, R4
         BRz QUIT
 
         BR MAIN_LOOP
@@ -95,8 +95,8 @@ UP
         ; Move the image up 8 pixels 
         LDI R0, YCOORD
         ADD R0, R0, #-8
-        BRzp STOREUPY
-STOREUPY
+        BRn DONTMOVE
+
         STI R0, YCOORD
         BR REDRAW
 
@@ -116,11 +116,9 @@ DOWN
         NOT R2, R1
         ADD R2, R2, #1
         ADD R2, R0, R2
-        BRnz STOREDOWNY
 
-        LD R0, MAXY
+        BRp DONTMOVE
 
-STOREDOWNY
         STI R0, YCOORD
         BR REDRAW
 
@@ -132,14 +130,11 @@ RIGHT
         NOT R2, R1
         ADD R2, R2, #1
         ADD R2, R0, R2
-        BRnz STORERIGHTX
-
-        LD R0, MAXX
-    
-STORERIGHTX
+        BRp DONTMOVE
         STI R0, XCOORD
         BR REDRAW
 
+       
 
 CLEAR
         ; Clear the screen and restart the program from beginning 
@@ -151,8 +146,6 @@ QUIT
         HALT
 
 DRAW_IMAGE
-        
-        ST R3, SAVE_R3
         LD R4, SCREEN_BASE
         LDI R5, YCOORD
         AND R6, R6, #0
@@ -165,35 +158,14 @@ Y_LOOP
         ADD R6, R6, R5
         ADD R4, R4, R6
 
-        AND R5, R5, #0
-        ADD R5, R5, #20
-
-MOVEROW
-        ADD R6, R6, #0
-        ADD R6, R6, #20
-
-MOVECOL 
-        LDR R0, R3, #0
-        STR R0, R4, #0
-        ADD R3, R3, #1
-        ADD R4, R4, #1
-        ADD R6, R6, #-1
-        BRp MOVECOL
-        ADD R4, R4, #108
-        ADD R5, R5, #-1
-        BRp MOVEROW
-
-        LD R3, SAVE_R3
-        RET 
-
 REDRAW
         JSR CLEAR_SCREEN
         JSR DRAW_IMAGE
         BR MAIN_LOOP
 
-; DONTMOVE
+DONTMOVE
         ; Don't redraw the image if it is out of bounds
-        ; BR MAIN_LOOP
+        BR MAIN_LOOP
 
 CLEAR_SCREEN
         LD R1, SCREEN_START
