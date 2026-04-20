@@ -195,7 +195,7 @@ MOVECOL
         ADD R5, R5, #-1
         BRp MOVEROW
 
-        LD R3, SAVE_R3
+        LD R3, SAVE_R3DRAWING
         LD R7, SAVE_R7
         RET 
 
