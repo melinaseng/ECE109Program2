@@ -177,11 +177,11 @@ Y_DONE
         ADD R4, R4, R6
 
         AND R5, R5, #0
-        ADD R5, R5, #20
+        LD R5, IMG_SIZE
 
 MOVEROW
         AND R6, R6, #0
-        ADD R6, R6, #20
+        LD R6, IMG_SIZE
 
 MOVECOL 
         LDR R0, R3, #0
@@ -191,7 +191,8 @@ MOVECOL
         ADD R6, R6, #-1
         BRp MOVECOL
 
-        ADD R4, R4, #108
+        LD R6, ROWSKIP
+        ADD R4, R4, R6
         ADD R5, R5, #-1
         BRp MOVEROW
 
@@ -235,6 +236,8 @@ SCREEN_BASE .FILL xC000
 SCREEN_START .FILL xC000
 SCREEN_END .FILL xFDFF
 WIDTHOFROW .FILL #128
+ROWSKIP .FILL #108
+IMG_SIZE .FILL #20 
 
 STARTX .FILL #54
 STARTY .FILL #52
