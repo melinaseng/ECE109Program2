@@ -35,7 +35,6 @@ CHECK
         ADD R2, R0, R1
         BRz LOADO
 
-        GETC
         BR CHECK ; Ignore invalid characters 
 
 LOADX
@@ -154,7 +153,7 @@ QUIT
 REDRAW
         ST R3, SAVE_R3
         JSR CLEAR_SCREEN
-        ST R3, SAVE_R3
+        LD R3, SAVE_R3
         JSR DRAW_IMAGE
         BR MAIN_LOOP
 
@@ -204,6 +203,7 @@ CLEAR_SCREEN
         ST R0, SAVE_R0
         ST R1, SAVE_R1
         ST R2, SAVE_R2
+        ST R4, SAVE_R4
 
         LD R1, SCREEN_START
         LD R2, SCREEN_END
@@ -212,20 +212,22 @@ CLEAR_SCREEN
 CLEAR_LOOP
         STR R0, R1, #0
         ADD R1, R1, #1
-        NOT R3, R1
-        ADD R3, R3, #1
-        ADD R3, R2, R3
+        NOT R4, R1
+        ADD R4, R4, #1
+        ADD R4, R2, R4
         BRzp CLEAR_LOOP
 
         LD R0, SAVE_R0
         LD R1, SAVE_R1
         LD R2, SAVE_R2
+        LD R3, SAVE_R3
         RET
 
 SAVE_R0 .FILL #0
 SAVE_R1 .FILL #0
 SAVE_R2 .FILL #0
 SAVE_R3 .FILL #0
+SAVE_R4 .FILL #0
 SAVE_R7 .FILL #0
 
 SCREEN_BASE .FILL xC000
